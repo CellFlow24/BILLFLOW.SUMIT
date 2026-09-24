@@ -499,11 +499,6 @@ patientPhone.addEventListener('focus', function() {
     this.style.border = "1px solid #CBD5E1";
 });
 
-// Remove any red error styling when they start typing
-customerPhone.addEventListener('focus', function() {
-    this.style.border = "1px solid #CBD5E1";
-});
-
 // --- Save & Generate Bill Logic ---
 const saveBillBtn = document.getElementById('saveBillBtn');
 
@@ -972,13 +967,8 @@ function openPrintPreview(billData, origin = 'historyScreen') {
             <div class="calc-row" style="color: #64748B;"><span>CGST</span> <span>${splitTax}</span></div>
             <div class="calc-row" style="color: #64748B;"><span>SGST</span> <span>${splitTax}</span></div>
         `;
-    } else {
-            gstCalcBlock.innerHTML = `
-                <div class="calc-row" style="color: #64748B;"><span>IGST</span> <span>${totalGstAmount.toFixed(2)}</span></div>
-            `;
-        }
     }
-
+    
     // 5. PAID / DUE / CLEARED Stamp
     const stampEl = document.getElementById('invStatusStamp');
     if (parseFloat(billData.due) > 0) {
