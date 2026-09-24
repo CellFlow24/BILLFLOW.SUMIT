@@ -917,31 +917,18 @@ function openPrintPreview(billData, origin = 'historyScreen') {
         itemsList = billData.cart || [];
     }
 
-    let totalGstAmount = 0;
-    
     itemsList.forEach((item, idx) => {
         const tr = document.createElement('tr');
         const itemName = item.name || item.itemName; 
+        
+        // We still calculate the total just in case multiple were clicked, 
+        // but we only display the final amount for the test.
         const qty = parseFloat(item.qty) || 1;
         const itemTot = parseFloat(item.itemTotal || (parseFloat(item.price) * qty));
-        const itemGstAmt = parseFloat(item.gstAmount || 0);
-        
-        totalGstAmount += itemGstAmt;
-
-        const baseTotal = itemTot - itemGstAmt;
-        const baseRate = baseTotal / qty;
-        
-        let gstPercent = 0;
-        if (baseTotal > 0) {
-            gstPercent = Math.round((itemGstAmt / baseTotal) * 100);
-        }
 
         tr.innerHTML = `
             <td>${idx + 1}</td>
             <td style="text-align: left;">${itemName}</td>
-            <td>${qty}</td>
-            <td>${baseRate.toFixed(2)}</td>
-            <td>${gstPercent > 0 ? gstPercent + '%' : '-'}</td>
             <td>${itemTot.toFixed(2)}</td>
         `;
         tbody.appendChild(tr);
