@@ -437,13 +437,9 @@
                 
                 <!-- Bottom Section Grid -->
                 <div class="inv-footer-grid">
-                    <!-- Bank Details -->
-                    <div class="inv-bank-box border-right">
-                        <strong>Note:</strong><br><br>
-                        <span id="invBankName"></span><br>
-                        A/C Number - <span id="invAccountNumber"></span><br>
-                        IFSC Code - <span id="invIFSC"></span><br>
-                        UPI ID: <span id="invUPI"></span>
+                    <!-- Note Details (Replacing Bank Details) -->
+                    <div class="inv-bank-box border-right" id="invPrimaryNoteBox">
+                        <!-- Note injected via JS -->
                     </div>
                     
                     <!-- Status Stamp -->
@@ -477,9 +473,8 @@
                     </div>
                 </div>
                 
-                <!-- Confidential Note -->
-                <div class="inv-note-row" id="invNoteContainer" style="display: flex; justify-content: space-between; padding: 15px 5px; font-weight: bold; font-size: 0.85rem;">
-                    <div id="invNoteText" style="color: var(--navy-blue); max-width: 60%;"></div>
+                <!-- Footer Sign-off -->
+                <div class="inv-note-row" style="display: flex; justify-content: flex-end; padding: 15px 5px; font-weight: bold; font-size: 0.85rem;">
                     <div style="text-align: right; margin-top: 20px;">THANK YOU FOR CHOOSING US</div>
                 </div>
             </div>
