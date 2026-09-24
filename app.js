@@ -844,7 +844,7 @@ function openPrintPreview(billData, origin = 'historyScreen') {
     // 1. Populate Company Settings
     document.getElementById('invCompanyName').innerText = companySettings.CompanyName || '';
     document.getElementById('invCompanyAddress').innerText = companySettings.CompanyAddress || '';
-    document.getElementById('invCompanyWebsite').innerText = companySettings.CompanyWebsite || '';
+    // Removed the website line entirely to prevent TypeError
     document.getElementById('invCompanyEmail').innerText = companySettings.CompanyEmail || '';
     document.getElementById('invCompanyPhone').innerText = companySettings.CompanyPhone || '';
 
@@ -861,7 +861,8 @@ function openPrintPreview(billData, origin = 'historyScreen') {
     // Handle Bank Field Visibility
     const bankName = companySettings.BankName || '';
     if (bankName.trim() === '') {
-        document.querySelector('.inv-bank-box').innerHTML = '<strong>Payment Options:</strong><br><br>Cash or UPI accepted.';
+        // Updated to say "Note:" instead of "Payment Options:"
+        document.querySelector('.inv-bank-box').innerHTML = '<strong>Note:</strong><br><br>Cash or UPI accepted.';
     } else {
         document.getElementById('invBankName').innerText = bankName;
         document.getElementById('invAccountNumber').innerText = companySettings.AccountNumber || '';
