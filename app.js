@@ -166,7 +166,7 @@ function toggleMenu() {
     document.getElementById('menuOverlay').classList.toggle('hidden');
 }
 
-function switchTab(screenId) {
+function switchTab(screenId, pushHistory = true) {
     const screens = ['dashboardScreen', 'itemScreen', 'billingScreen', 'dueScreen', 'historyScreen', 'printPreviewScreen'];
     screens.forEach(id => document.getElementById(id).classList.add('hidden'));
     
@@ -179,7 +179,26 @@ function switchTab(screenId) {
         calculateBill();
     }
     window.scrollTo(0, 0); // Scroll to top when changing screens
+
+    // Native App Back Button Logic
+    if (pushHistory && screenId !== 'dashboardScreen') {
+        history.pushState({ screen: screenId }, '', '');
+    }
 }
+
+// Hardware Back Button Interceptor
+window.addEventListener('popstate', (e) => {
+    const isDashboard = !document.getElementById('dashboardScreen').classList.contains('hidden');
+    const isLogin = !document.getElementById('loginScreen').classList.contains('hidden');
+    
+    if (!isDashboard && !isLogin) {
+        // If on a sub-screen, go back to the dashboard silently
+        switchTab('dashboardScreen', false); 
+    } else {
+        // If already on the dashboard, let the OS handle it (exits the app)
+        history.back();
+    }
+});
 
 // Show/Hide Loader
 function showLoader() {
@@ -229,16 +248,19 @@ loginForm.addEventListener('submit', async (e) => {
                 // Route to password setup
                 showScreen(changePasswordScreen);
             } else {
+                // Save session permanently
+                localStorage.setItem('billflowUser', currentUserId);
+                localStorage.setItem('billflowName', currentUserName);
+
                 // Route to dashboard
                 document.getElementById('welcomeMessage').innerText = `Hello, ${data.name}!`;
                 showScreen(dashboardScreen);
                 document.getElementById('topAppBar').classList.remove('hidden');
                 document.getElementById('menuUserName').innerText = `Logged in as: ${data.name}`;
                 
-                // Fetch data in the background!
-                loadDashboardStats();
+                // Fetch data in the background
                 loadItems();
-                loadBills();
+                loadBills(); // Note: loadBills already triggers loadDashboardStats
                 loadSettings();
             }
         } else {
@@ -1015,3 +1037,39 @@ installBtn.addEventListener('click', async () => {
 closeInstallBtn.addEventListener('click', () => {
     installBanner.classList.add('install-hidden');
 });
+
+// --- Persistent Login & Logout Engine ---
+
+// Auto-Login Check on App Load
+window.addEventListener('DOMContentLoaded', () => {
+    const savedUser = localStorage.getItem('billflowUser');
+    const savedName = localStorage.getItem('billflowName');
+    
+    if (savedUser && savedName) {
+        currentUserId = savedUser;
+        currentUserName = savedName;
+        
+        document.getElementById('welcomeMessage').innerText = `Hello, ${savedName}!`;
+        showScreen(dashboardScreen);
+        document.getElementById('topAppBar').classList.remove('hidden');
+        document.getElementById('menuUserName').innerText = `Logged in as: ${savedName}`;
+        
+        // Fetch background data
+        loadItems();
+        loadBills(); 
+        loadSettings();
+    }
+});
+
+// Manual Logout Function
+function logoutUser() {
+    localStorage.removeItem('billflowUser');
+    localStorage.removeItem('billflowName');
+    currentUserId = "";
+    currentUserName = "";
+    
+    showScreen(loginScreen);
+    document.getElementById('topAppBar').classList.add('hidden');
+    document.getElementById('loginForm').reset();
+    showToast("Logged out successfully", "success");
+}
