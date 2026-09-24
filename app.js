@@ -870,14 +870,16 @@ function openPrintPreview(billData, origin = 'historyScreen') {
         document.getElementById('invUPI').innerText = companySettings.UPIID || '';
     }
 
-    // Handle Note Visibility
+    // Handle Note Field Visibility (Replacing Bank Details)
     const noteText = companySettings.Note || '';
-    const noteContainer = document.getElementById('invNoteContainer');
-    if (noteText.trim() !== '') {
-        document.getElementById('invNoteText').innerText = noteText;
-        noteContainer.style.display = 'flex';
+    const noteBox = document.getElementById('invPrimaryNoteBox');
+    
+    if (noteText.trim() === '') {
+        // Fallback if Note is empty in Google Sheets
+        noteBox.innerHTML = '<strong>Note:</strong><br><br>Please keep this receipt for report collection.';
     } else {
-        noteContainer.style.display = 'none';
+        // Injects the Note from Google Sheets
+        noteBox.innerHTML = `<strong>Note:</strong><br><br><span style="white-space: pre-wrap;">${noteText}</span>`;
     }
 
     // 2. Populate Patient Info
