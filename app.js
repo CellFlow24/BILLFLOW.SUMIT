@@ -639,6 +639,7 @@ async function loadBills() {
         if (data.success) {
             allBills = data.bills;
             renderBills();
+            loadDashboardStats(); // <--- ADD THIS LINE HERE
         }
     } catch (error) {
         console.error("Failed to load bills", error);
@@ -845,12 +846,12 @@ function openPrintPreview(billOrId, origin = 'historyScreen') {
     if (!billData) return; // Failsafe if bill isn't found
     
     printPreviewOrigin = origin;
-    // 1. Populate Company Settings
-    document.getElementById('invCompanyName').innerText = companySettings.CompanyName || '';
-    document.getElementById('invCompanyAddress').innerText = companySettings.CompanyAddress || '';
-    // Removed the website line entirely to prevent TypeError
-    document.getElementById('invCompanyEmail').innerText = companySettings.CompanyEmail || '';
-    document.getElementById('invCompanyPhone').innerText = companySettings.CompanyPhone || '';
+    
+    // 1. Populate Company Settings with robust fallbacks
+    document.getElementById('invCompanyName').innerText = companySettings.CompanyName || 'GHOSH DIAGNOSTICS';
+    document.getElementById('invCompanyAddress').innerText = companySettings.CompanyAddress || 'Jaugram, Bara Bazar Near kali mandir Pin- 713166';
+    document.getElementById('invCompanyEmail').innerText = companySettings.CompanyEmail || 'cellflow24@gmail.com';
+    document.getElementById('invCompanyPhone').innerText = companySettings.CompanyPhone || '8629929105';
 
     // Handle GST Field Visibility
     const gstBlock = document.getElementById('invGstBlock');
@@ -862,18 +863,6 @@ function openPrintPreview(billOrId, origin = 'historyScreen') {
         gstBlock.style.display = 'none'; // Hides entirely if blank
     }
 
-    // Handle Bank Field Visibility
-    const bankName = companySettings.BankName || '';
-    if (bankName.trim() === '') {
-        // Updated to say "Note:" instead of "Payment Options:"
-        document.querySelector('.inv-bank-box').innerHTML = '<strong>Note:</strong><br><br>Cash or UPI accepted.';
-    } else {
-        document.getElementById('invBankName').innerText = bankName;
-        document.getElementById('invAccountNumber').innerText = companySettings.AccountNumber || '';
-        document.getElementById('invIFSC').innerText = companySettings.IFSCCode || '';
-        document.getElementById('invUPI').innerText = companySettings.UPIID || '';
-    }
-
     // Handle Note Field Visibility (Replacing Bank Details)
     const noteText = companySettings.Note || '';
     const noteBox = document.getElementById('invPrimaryNoteBox');
@@ -882,12 +871,13 @@ function openPrintPreview(billOrId, origin = 'historyScreen') {
         // Fallback if Note is empty in Google Sheets
         noteBox.innerHTML = '<strong>Note:</strong><br><br>Please keep this receipt for report collection.';
     } else {
-        // Injects the Note from Google Sheets
+        // Injects the Note directly from Google Sheets
         noteBox.innerHTML = `<strong>Note:</strong><br><br><span style="white-space: pre-wrap;">${noteText}</span>`;
     }
 
     // 2. Populate Patient Info
     const docTitle = document.getElementById('invDocType');
+    
     if (parseFloat(billData.due) > 0) {
         docTitle.innerText = "DUE SLIP";
     } else {
