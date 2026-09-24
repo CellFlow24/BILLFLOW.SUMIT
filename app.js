@@ -379,9 +379,10 @@ function selectPayment(method) {
 function addItemToCart(item) {
     const existingItem = currentCart.find(i => i.id === item.id);
     if (existingItem) {
-        existingItem.qty += 1;
+        // Prevent adding the same test twice
+        showToast("Test already added to bill.", "error"); 
     } else {
-        // Create a deep copy of the item and set initial quantity to 1
+        // Set fixed quantity to 1 for calculation logic
         currentCart.push({ ...item, qty: 1 });
     }
     renderCart();
@@ -389,6 +390,7 @@ function addItemToCart(item) {
 }
 
 function updateCartQty(index, newQty) {
+    // Kept for backend math compatibility, though hidden from UI
     const qty = parseInt(newQty);
     if (qty > 0) {
         currentCart[index].qty = qty;
@@ -408,7 +410,7 @@ function renderCart() {
     cartBody.innerHTML = '';
     
     if (currentCart.length === 0) {
-        cartBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748B;">No items added yet.</td></tr>';
+        cartBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #64748B;">No tests added yet.</td></tr>';
         return;
     }
 
@@ -419,12 +421,7 @@ function renderCart() {
         tr.innerHTML = `
             <td>
                 <strong style="color: var(--navy-blue);">${item.name}</strong><br>
-                <small style="color: var(--text-light);">₹${item.finalPrice} / ea</small>
-            </td>
-            <td>
-                <input type="number" value="${item.qty}" min="1" 
-                    style="width: 50px; padding: 6px; border-radius: 6px; border: 1px solid #CBD5E1; text-align: center;" 
-                    onchange="updateCartQty(${index}, this.value)">
+                <small style="color: var(--text-light);">₹${item.finalPrice}</small>
             </td>
             <td style="font-weight: 600; color: var(--navy-blue);">₹${itemTotal}</td>
             <td style="text-align: right;">
