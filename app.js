@@ -1,5 +1,5 @@
 // Your live Apps Script API URL
-const API_URL = "https://script.google.com/macros/s/AKfycbzHM7q9IAJeer1jno6J_fg83b_zG61EqZ1KvENWSxO4iD7_evd4CseccjPJqIXzTyGg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbztIFtZaMca2Cdwl8YQu_elM0KgVmo3rgXPV_UTPKl5AKbVyaqj9vtM3NlvvCOg7H0z/exec";
 
 // DOM Elements
 const loginScreen = document.getElementById('loginScreen');
