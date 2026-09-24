@@ -486,16 +486,17 @@ billDiscount.addEventListener('input', calculateBill);
 billPaid.addEventListener('input', calculateBill);
 
 // --- Phone Number Validation ---
-const customerPhone = document.getElementById('customerPhone');
+const patientPhone = document.getElementById('patientPhone');
 
-customerPhone.addEventListener('input', function(e) {
-    // This removes anything that is NOT a number (0-9) instantly
+patientPhone.addEventListener('input', function(e) {
     this.value = this.value.replace(/\D/g, '');
-    
-    // This acts as a backup to ensure it never exceeds 10 digits if they paste a long number
     if (this.value.length > 10) {
         this.value = this.value.slice(0, 10);
     }
+});
+
+patientPhone.addEventListener('focus', function() {
+    this.style.border = "1px solid #CBD5E1";
 });
 
 // Remove any red error styling when they start typing
@@ -508,16 +509,18 @@ const saveBillBtn = document.getElementById('saveBillBtn');
 
 saveBillBtn.addEventListener('click', async () => {
     // 1. Validate the form
-    const name = document.getElementById('customerName').value.trim();
-    const phone = document.getElementById('customerPhone').value.trim();
-    const location = document.getElementById('customerLocation').value.trim();
+    const name = document.getElementById('patientName').value.trim();
+    const phone = document.getElementById('patientPhone').value.trim();
+    const age = document.getElementById('patientAge').value.trim();
+    const gender = document.getElementById('patientGender').value;
+    const doctor = document.getElementById('referralDoctor').value.trim() || 'Self';
 
-    if (!name || phone.length !== 10 || !location) {
-        showToast("Please fill all customer details correctly.", "error");
+    if (!name || phone.length !== 10 || !age) {
+        showToast("Please fill all patient details correctly.", "error");
         return;
     }
     if (currentCart.length === 0) {
-        showToast("Cannot save an empty bill. Add items.", "error");
+        showToast("Cannot save an empty bill. Add tests.", "error");
         return;
     }
 
@@ -526,9 +529,11 @@ saveBillBtn.addEventListener('click', async () => {
         action: 'saveBill',
         billId: document.getElementById('billId').value,
         billDate: document.getElementById('billDate').value,
-        customerName: name,
-        customerPhone: phone,
-        customerLocation: location,
+        patientName: name,
+        patientPhone: phone,
+        patientAge: age,
+        patientGender: gender,
+        referralDoctor: doctor,
         subTotal: document.getElementById('summarySubTotal').innerText.replace('₹', ''),
         discount: document.getElementById('billDiscount').value || 0,
         payable: document.getElementById('summaryPayable').innerText.replace('₹', ''),
@@ -537,7 +542,7 @@ saveBillBtn.addEventListener('click', async () => {
         method: document.getElementById('billMethod').value,
         createdBy: currentUserName,
         
-        // Map the cart to calculate precise GST per item for the database
+        // Map the cart (tests)
         cart: currentCart.map(item => {
             const base = parseFloat(item.price);
             const gst = parseFloat(item.gst);
@@ -547,7 +552,7 @@ saveBillBtn.addEventListener('click', async () => {
             return {
                 name: item.name,
                 qty: item.qty,
-                price: item.finalPrice, // Using final price as display price
+                price: item.finalPrice, 
                 gstAmount: gstTotal.toFixed(2),
                 itemTotal: (baseTotal + gstTotal).toFixed(2)
             };
@@ -567,21 +572,18 @@ saveBillBtn.addEventListener('click', async () => {
         if (data.success) {
             showToast("Bill Generated Successfully!", "success");
             
-            // Reset the form for the next customer
+            // Reset the form
             document.getElementById('billingForm').reset();
             currentCart = [];
             renderCart();
             calculateBill();
             
-            // Generate a fresh ID and timestamp immediately
             document.getElementById('billId').value = 'INV-' + Date.now().toString().slice(-6); 
             document.getElementById('billDate').value = new Date().toLocaleString('en-IN');
             
-            // Refresh Dashboard numbers in the background
             loadDashboardStats(); 
             loadBills();
             
-            // Trigger the Print Preview immediately using the payload we just built
             openPrintPreview(billPayload, 'billingScreen');
         } else {
             showToast("Failed to save bill.", "error");
@@ -882,17 +884,16 @@ function openPrintPreview(billData, origin = 'historyScreen') {
         noteContainer.style.display = 'none';
     }
 
-    // 2. Populate Customer & Bill Info
-    
+    // 2. Populate Patient Info
     const docTitle = document.getElementById('invDocType');
     if (parseFloat(billData.due) > 0) {
-        docTitle.innerText = "CHALAN";
+        docTitle.innerText = "DUE SLIP";
     } else {
-        docTitle.innerText = "INVOICE";
+        docTitle.innerText = "LAB RECEIPT";
     }
     // ----------------------------------------------
 
-    document.getElementById('invCustomerName').innerText = billData.customerName || billData.name;
+    document.getElementById('invPatientName').innerText = billData.patientName || billData.name;
     document.getElementById('invBillId').innerText = billData.billId || billData.id;
     
     // FORMAT THE DATE PROPERLY
@@ -904,9 +905,11 @@ function openPrintPreview(billData, origin = 'historyScreen') {
     }
     document.getElementById('invBillDate').innerText = niceDate;
     
-    document.getElementById('invCustomerPhone').innerText = billData.customerPhone || billData.phone;
-    const custLoc = billData.customerLocation || billData.location;
-    document.getElementById('invCustomerLocation').innerText = custLoc;
+    document.getElementById('invPatientPhone').innerText = billData.patientPhone || billData.phone;
+    
+    // Populate Age, Gender, and Doctor
+    document.getElementById('invAgeGender').innerText = `${billData.patientAge || '-'} / ${billData.patientGender || '-'}`;
+    document.getElementById('invReferredBy').innerText = billData.referralDoctor || 'Self';
 
     // 3. Populate Items Table
     const tbody = document.getElementById('invItemsBody');
@@ -930,7 +933,6 @@ function openPrintPreview(billData, origin = 'historyScreen') {
         
         totalGstAmount += itemGstAmt;
 
-        // Extract the true base rate (excluding GST) and the exact GST percentage
         const baseTotal = itemTot - itemGstAmt;
         const baseRate = baseTotal / qty;
         
@@ -950,7 +952,7 @@ function openPrintPreview(billData, origin = 'historyScreen') {
         tbody.appendChild(tr);
     });
     
-    // 4. Totals, Math, and Strict GST Logic
+    // 4. Totals, Math, and GST Logic
     document.getElementById('invSubTotal').innerText = billData.subTotal;
     document.getElementById('invDiscount').innerText = billData.discount;
     document.getElementById('invPayable').innerText = billData.payable;
@@ -964,14 +966,13 @@ function openPrintPreview(billData, origin = 'historyScreen') {
     gstCalcBlock.innerHTML = ''; 
     
     if (hasGst && totalGstAmount > 0) {
-        const locString = custLoc.toLowerCase();
-        if (locString.includes('west bengal') || locString.includes('west bangal') || locString.includes('wb')) {
-            const splitTax = (totalGstAmount / 2).toFixed(2);
-            gstCalcBlock.innerHTML = `
-                <div class="calc-row" style="color: #64748B;"><span>CGST</span> <span>${splitTax}</span></div>
-                <div class="calc-row" style="color: #64748B;"><span>SGST</span> <span>${splitTax}</span></div>
-            `;
-        } else {
+        // Defaulting to local CGST/SGST split for walk-in patients
+        const splitTax = (totalGstAmount / 2).toFixed(2);
+        gstCalcBlock.innerHTML = `
+            <div class="calc-row" style="color: #64748B;"><span>CGST</span> <span>${splitTax}</span></div>
+            <div class="calc-row" style="color: #64748B;"><span>SGST</span> <span>${splitTax}</span></div>
+        `;
+    } else {
             gstCalcBlock.innerHTML = `
                 <div class="calc-row" style="color: #64748B;"><span>IGST</span> <span>${totalGstAmount.toFixed(2)}</span></div>
             `;
