@@ -163,7 +163,7 @@
     <!-- Item Management Screen -->
     <div id="itemScreen" class="screen-container hidden">
         <div class="app-header">
-            <h2 class="section-title">Item Management</h2>
+            <h2 class="section-title">Test Management</h2>
         </div>
         
         <!-- Add Item Box -->
@@ -205,9 +205,9 @@
         </div>
 
         <form id="billingForm">
-            <!-- Part 1: Customer Details -->
+         <!-- Part 1: Customer Details -->
             <div class="card-box">
-                <h3 class="card-title">Customer Details</h3>
+                <h3 class="card-title">Patient Details</h3>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Bill ID</label>
@@ -218,18 +218,32 @@
                         <input type="text" id="billDate" readonly style="background: #F8FAFC; color: #64748B;">
                     </div>
                 </div>
+                
                 <div class="input-group">
-                    <label>Customer Name</label>
-                    <input type="text" id="customerName" required autocomplete="off">
+                    <label>Patient Name</label>
+                    <input type="text" id="patientName" required autocomplete="off">
                 </div>
+                
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Phone Number</label>
-                        <input type="tel" id="customerPhone" required autocomplete="off" maxlength="10" minlength="10" inputmode="numeric">
+                        <input type="tel" id="patientPhone" required autocomplete="off" maxlength="10" minlength="10" inputmode="numeric">
                     </div>
                     <div class="input-group">
-                        <label>Location</label>
-                        <input type="text" id="customerLocation" required autocomplete="off">
+                        <label>Age</label>
+                        <input type="number" id="patientAge" required autocomplete="off" min="0">
+                    </div>
+                    <div class="input-group" style="position: relative;">
+                        <label>Gender</label>
+                        <select id="patientGender" class="custom-select" style="width: 100%; padding: 12px 15px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 1rem; background-color: var(--white); color: var(--navy-blue);">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Referred By (Doctor)</label>
+                        <input type="text" id="referralDoctor" autocomplete="off" placeholder="Self or Doctor Name">
                     </div>
                 </div>
             </div>
@@ -385,22 +399,23 @@
                 <!-- Customer & Bill Info -->
                 <div class="inv-info-grid">
                     <div class="inv-info-col border-right border-bottom">
-                        <strong>NAME</strong> <span id="invCustomerName" style="margin-left: 20px;"></span>
+                        <strong>PATIENT:</strong> <span id="invPatientName" style="margin-left: 10px;"></span><br>
+                        <strong>AGE/SEX:</strong> <span id="invAgeGender" style="margin-left: 10px;"></span>
                     </div>
                     <div class="inv-info-col border-bottom">
-                        <strong>BILL No.</strong> <span id="invBillId" style="margin-left: 10px;"></span><br>
-                        <strong>DATE</strong> <span id="invBillDate" style="margin-left: 10px;"></span><br>
-                        <strong>PHONE</strong> <span id="invCustomerPhone" style="margin-left: 10px;"></span>
+                        <strong>BILL No:</strong> <span id="invBillId" style="margin-left: 10px;"></span><br>
+                        <strong>DATE:</strong> <span id="invBillDate" style="margin-left: 10px;"></span><br>
+                        <strong>PHONE:</strong> <span id="invPatientPhone" style="margin-left: 10px;"></span>
                     </div>
                     <div class="inv-info-col border-right border-bottom">
-                        <strong>ADDRESS</strong> <span id="invCustomerLocation" style="margin-left: 20px;"></span>
+                        <strong>REFERRED BY:</strong> <br><span id="invReferredBy" style="display: block; margin-top: 5px;"></span>
                     </div>
                     <div class="inv-info-col border-bottom" style="background: #f8fafc;">
-                        <strong id="invDocType" style="display: block; text-align: center; border-bottom: 1px solid #000; padding-bottom: 2px;">INVOICE</strong>
-                        <div id="invGstBlock"><strong>GST NO</strong> <span id="invGstNumber" style="margin-left: 10px;"></span></div>
+                        <strong id="invDocType" style="display: block; text-align: center; border-bottom: 1px solid #000; padding-bottom: 2px;">LAB RECEIPT</strong>
+                        <div id="invGstBlock"><strong>GST NO:</strong> <span id="invGstNumber" style="margin-left: 10px;"></span></div>
                     </div>
                 </div>
-
+                
                 <!-- Items Table -->
                 <table class="inv-table">
                     <thead>
