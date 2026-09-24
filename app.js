@@ -211,9 +211,11 @@ function hideLoader() {
 
 // Switch Screens
 function showScreen(screenElement) {
-    loginScreen.classList.add('hidden');
-    changePasswordScreen.classList.add('hidden');
-    dashboardScreen.classList.add('hidden');
+    // Hide ALL screens first to prevent any overlap
+    const allScreens = ['loginScreen', 'changePasswordScreen', 'dashboardScreen', 'itemScreen', 'billingScreen', 'dueScreen', 'historyScreen', 'printPreviewScreen'];
+    allScreens.forEach(id => document.getElementById(id).classList.add('hidden'));
+    
+    // Show only the requested screen
     screenElement.classList.remove('hidden');
 }
 
