@@ -326,14 +326,17 @@ billSearchItem.addEventListener('input', (e) => {
         return;
     }
 
-    // Filter inventory based on search
-    const filtered = inventoryItems.filter(item => item.name.toLowerCase().includes(searchTerm));
+    // Filter inventory based on search (Name OR ID)
+    const filtered = inventoryItems.filter(item => 
+        item.name.toLowerCase().includes(searchTerm) || 
+        item.id.toLowerCase().includes(searchTerm)
+    );
     
     if (filtered.length > 0) {
         filtered.forEach(item => {
             const div = document.createElement('div');
             div.className = 'dropdown-item';
-            div.innerHTML = `<span><strong style="color: var(--navy-blue);">${item.name}</strong> <small style="color: var(--text-light);">(GST ${item.gst}%)</small></span><span>₹${item.finalPrice}</span>`;
+            div.innerHTML = `<span><strong style="color: var(--navy-blue);">${item.name}</strong> <small style="color: var(--text-light);">(ID: ${item.id} | GST ${item.gst}%)</small></span><span>₹${item.finalPrice}</span>`;
             
             // Add to cart on click
             div.onclick = () => {
