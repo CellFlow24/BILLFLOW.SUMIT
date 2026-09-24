@@ -704,7 +704,7 @@ function renderBills(filterDueStr = '', filterHistoryStr = '') {
         const clearBtn = isDue ? `<button onclick='event.stopPropagation(); openClearDueModal("${bill.id}", ${bill.due})' style="padding: 5px 12px; background: var(--tech-blue); color: #fff; border: none; border-radius: 6px; font-size: 0.75rem; cursor: pointer; margin-left: 10px; box-shadow: 0 2px 4px rgba(0,82,255,0.2);">Clear Due</button>` : '';
         
         return `
-        <div class="bill-card" onclick='openPrintPreview(${JSON.stringify(bill).replace(/'/g, "&apos;")}, "${origin}")' style="padding: 15px; border: 1px solid #E2E8F0; border-radius: 8px; margin-bottom: 10px; cursor: pointer; background: var(--white);">
+        <div class="bill-card" onclick='openPrintPreview("${bill.id}", "${origin}")' style="padding: 15px; border: 1px solid #E2E8F0; border-radius: 8px; margin-bottom: 10px; cursor: pointer; background: var(--white);">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <strong style="color: var(--navy-blue); font-size: 1.05rem;">${bill.name}</strong>
                 <span style="font-size: 0.75rem; color: var(--text-light); text-align: right;">${niceDate}${creatorText}</span>
