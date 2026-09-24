@@ -839,7 +839,11 @@ function numberToWords(num) {
     return str.toUpperCase();
 }
 
-function openPrintPreview(billData, origin = 'historyScreen') {
+function openPrintPreview(billOrId, origin = 'historyScreen') {
+    // Check if we received an ID string or the full object
+    let billData = typeof billOrId === 'string' ? allBills.find(b => b.id === billOrId) : billOrId;
+    if (!billData) return; // Failsafe if bill isn't found
+    
     printPreviewOrigin = origin;
     // 1. Populate Company Settings
     document.getElementById('invCompanyName').innerText = companySettings.CompanyName || '';
