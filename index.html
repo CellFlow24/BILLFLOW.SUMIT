@@ -10,6 +10,7 @@
     <!-- PWA Manifest will be added later -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
 </head>
 <body>
 
@@ -56,6 +57,7 @@
             <a onclick="switchTab('billingScreen'); toggleMenu()">Create New Invoice</a>
             <a onclick="switchTab('dueScreen'); toggleMenu()">Due Bills</a>
             <a onclick="switchTab('historyScreen'); toggleMenu()">Bill History</a>
+            <a onclick="logoutUser(); toggleMenu()" style="color: var(--error-red); border-top: 1px solid #E2E8F0; margin-top: 10px;">Logout</a>
         </div>
     </div>
     <div id="menuOverlay" class="menu-overlay hidden no-print" onclick="toggleMenu()"></div>
